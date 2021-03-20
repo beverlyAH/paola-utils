@@ -179,6 +179,36 @@ describe('removeStudentFromCohortByID', () => {
   });
 });
 
+describe('addTagsToStudent', () => {
+  const makeTag = (name, color) => ({ name, color });
+
+  test('Should expect a 200 status if tags are successfully added.', async () => {
+    await addStudent();
+    const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
+    const status = await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
+    expect(status).toBe(200);
+  });
+
+  test('Should expect an error if non-approved colors are used.', async () => {
+    await addStudent();
+    const wrongColor = makeTag('This won\'t work.', '#f5fffa');
+    const status = await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, wrongColor);
+    expect(status).toBe('The current resource was invalid');
+  });
+
+  test('Should expect an error if student is not found in cohort', async () => {
+    const testTag = makeTag('No students here.', 'orange');
+    const status = await addTagsToStudent(TEST_LEARN_COHORT_ID, 0, testTag);
+    expect(status).toBe('The requested resource could not be found');
+  });
+
+  test('Should expect an error if the cohortId provided is invalid', async () => {
+    const testTag = makeTag('Wrong cohort', 'blue');
+    const status = await addTagsToStudent(0, TEST_STUDENT.id, testTag);
+    expect(status).toBe('The requested resource could not be found');
+  });
+});
+
 // TODO: Mock this test to not create a cohort in Learn Prod
 // describe('createNewCohort', () => {
 //   test('Should expect a 200 status if successfull', async () => {
