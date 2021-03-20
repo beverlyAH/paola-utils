@@ -3,6 +3,7 @@ const { LEARN_API_COHORTS } = require('../constants');
 
 const headers = {
   Authorization: `Bearer ${process.env.LEARN_TOKEN}`,
+  Accept: 'application/json',
   'Content-Type': 'application/json',
 };
 
@@ -109,6 +110,22 @@ exports.createNewCohort = async (options) => {
       `${LEARN_API_COHORTS}`,
       { method: 'POST', body: JSON.stringify(options), headers },
     );
+    const json = await response.json();
+    if (json.error || json.message) throw new Error(json.error || json.message);
+    return response.status;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+exports.addTagsToStudent = async (cohortId, id, ...tags) => {
+  const body = { tags };
+  try {
+    const response = await fetch(
+      `${LEARN_API_COHORTS}/${cohortId}/users/${id}/tags`,
+      { method: 'POST', body: JSON.stringify(body), headers },
+    );
+
     const json = await response.json();
     if (json.error || json.message) throw new Error(json.error || json.message);
     return response.status;
