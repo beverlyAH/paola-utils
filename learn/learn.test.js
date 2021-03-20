@@ -10,6 +10,7 @@ const {
   removeStudentFromCohort,
   removeStudentFromCohortByID,
   createNewCohort,
+  addTagsToStudent,
 } = require('.');
 
 const TEST_LEARN_COHORT_ID = 2024;
@@ -98,10 +99,11 @@ describe('validateStudentEnrollment', () => {
       'last_name',
       'email',
       'roles',
+      'tags',
     ];
     const student = await validateStudentEnrollment(TEST_LEARN_COHORT_ID, TEST_STUDENT.email);
     const actualProps = Object.keys(student);
-    expect(actualProps).toEqual(expectedProps);
+    expect(expectedProps).toEqual(actualProps);
   });
 
   test('Should expect an error if student is not found in cohort', async () => {
@@ -124,10 +126,11 @@ describe('validateStudentEnrollmentByID', () => {
       'last_name',
       'email',
       'roles',
+      'tags',
     ];
     const student = await validateStudentEnrollmentByID(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
     const actualProps = Object.keys(student);
-    expect(actualProps).toEqual(expectedProps);
+    expect(expectedProps).toEqual(actualProps);
   });
 
   test('Should expect an error if student is not found in cohort', async () => {
