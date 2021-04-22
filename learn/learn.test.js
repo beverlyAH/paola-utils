@@ -1,4 +1,3 @@
-require('dotenv').config();
 const fetch = require('node-fetch');
 const { LEARN_API_COHORTS } = require('../constants');
 
@@ -179,14 +178,29 @@ describe('removeStudentFromCohortByID', () => {
   });
 });
 
-describe('addTagsToStudent', () => {
-  const makeTag = (name, color) => ({ name, color });
+const makeTag = (name, color) => ({ name, color });
 
+describe('addTagsToStudent', () => {
   test('Should expect a 200 status if tags are successfully added.', async () => {
     await addStudent();
     const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
     const status = await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
     expect(status).toBe(200);
+  });
+
+  test('Should expect tags to be added to student', async () => {
+    await addStudent();
+    const testTag = makeTag('Find this tag.', 'green');
+    await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, testTag);
+    const students = await getStudents();
+    const student = students.find(
+      (person) => person.id === TEST_STUDENT.id,
+    );
+    const hasTag = student.tags.some((tag) => {
+      return tag.name === 'Find this tag.';
+    });
+
+    expect(hasTag).toBe(true);
   });
 
   test('Should expect an error if non-approved colors are used.', async () => {
