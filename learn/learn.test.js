@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fetch = require('node-fetch');
 const { LEARN_API_COHORTS } = require('../constants');
 
@@ -196,9 +197,9 @@ describe('addTagsToStudent', () => {
     const student = students.find(
       (person) => person.id === TEST_STUDENT.id,
     );
-    const hasTag = student.tags.some((tag) => {
-      return tag.name === 'Find this tag.';
-    });
+    const hasTag = student.tags.some(
+      (tag) => tag.name === 'Find this tag.',
+    );
 
     expect(hasTag).toBe(true);
   });

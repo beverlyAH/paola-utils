@@ -178,3 +178,17 @@ exports.removeAllTagsFromStudent = async (cohortId, id) => {
     return error;
   }
 };
+
+exports.getAllTagsFromCohort = async (cohortId) => {
+  try {
+    const response = await fetch(
+      `${LEARN_API_COHORTS}/${cohortId}/tags`,
+      { method: 'GET', headers },
+    );
+    const json = await response.json();
+    if (json.error || json.message) throw new Error(json.error || json.message);
+    return json;
+  } catch (error) {
+    return error.message;
+  }
+};
