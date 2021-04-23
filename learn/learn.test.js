@@ -183,7 +183,6 @@ describe('removeStudentFromCohortByID', () => {
 });
 
 const makeTag = (name, color) => ({ name, color });
-
 describe('addTagsToStudent', () => {
   test('Should expect a 200 status if tags are successfully added.', async () => {
     await addStudent();
@@ -281,6 +280,35 @@ describe('removeTagFromStudent', () => {
 
   test('Should expect an error if student is not found in cohort', async () => {
     const status = await removeTagFromStudent(TEST_LEARN_COHORT_ID, 0);
+    expect(status).toBe('The requested resource could not be found');
+  });
+});
+
+describe('removeAllTagsFromStudent', () => {
+  test('Should expect "all tags removed" message when tags are successfully removed.', async () => {
+    await addStudent();
+    const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
+    await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
+    const message = await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    expect(message).toBe('All tags removed.');
+  });
+
+  test('Should expect all tags to be removed.', async () => {
+    await addStudent();
+    const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
+    await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
+    await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    expect(tags.length).toBe(0);
+  });
+
+  test('Should expect an error if the cohortId provided is invalid', async () => {
+    const status = await removeAllTagsFromStudent(0, TEST_STUDENT.id);
+    expect(status).toBe('The requested resource could not be found');
+  });
+
+  test('Should expect an error if student is not found in cohort', async () => {
+    const status = await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, 0);
     expect(status).toBe('The requested resource could not be found');
   });
 });
