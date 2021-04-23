@@ -161,3 +161,20 @@ exports.removeTagFromStudent = async (cohortId, id, tagId) => {
     return error.message;
   }
 };
+
+exports.removeAllTagsFromStudent = async (cohortId, id) => {
+  try {
+    const tags = await this.getAllTagsFromStudent(cohortId, id);
+    Promise.all(tags.map(
+      (tag) => this.removeTagFromStudent(cohortId, id, tag.id),
+    ))
+      .then(
+        (data) => 'All tags removed.',
+      )
+      .catch(
+        (error) => error,
+      );
+  } catch (error) {
+    return error;
+  }
+};
