@@ -11,6 +11,8 @@ const {
   removeStudentFromCohortByID,
   createNewCohort,
   addTagsToStudent,
+  getAllTagsFromStudent,
+  removeAllTagsFromStudent,
 } = require('.');
 
 const TEST_LEARN_COHORT_ID = 2024;
@@ -220,6 +222,35 @@ describe('addTagsToStudent', () => {
   test('Should expect an error if the cohortId provided is invalid', async () => {
     const testTag = makeTag('Wrong cohort', 'blue');
     const status = await addTagsToStudent(0, TEST_STUDENT.id, testTag);
+    expect(status).toBe('The requested resource could not be found');
+  });
+});
+
+describe('getAllTagsFromStudent', () => {
+  test('Should expect tags if tags are successfully retrieved.', async () => {
+    await addStudent();
+    const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    expect(Array.isArray(tags)).toBe(true);
+  });
+
+  test('Should expect tags if they exist on student object', async () => {
+    await addStudent();
+    await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
+    await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
+    const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    console.log(tags);
+    expect(tags.length).toEqual(2);
+  });
+
+  test('Should expect an error if the cohortId provided is invalid', async () => {
+    const status = await getAllTagsFromStudent(0, TEST_STUDENT.id);
+    expect(status).toBe('The requested resource could not be found');
+  });
+
+  test('Should expect an error if student is not found in cohort', async () => {
+    const status = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, 0);
+    console.log(status);
     expect(status).toBe('The requested resource could not be found');
   });
 });
