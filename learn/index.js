@@ -165,7 +165,7 @@ exports.removeTagFromStudent = async (cohortId, id, tagId) => {
 exports.removeAllTagsFromStudent = async (cohortId, id) => {
   try {
     const tags = await this.getAllTagsFromStudent(cohortId, id);
-    Promise.all(tags.map(
+    await Promise.all(tags.map(
       (tag) => this.removeTagFromStudent(cohortId, id, tag.id),
     ))
       .then(
