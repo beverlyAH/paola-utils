@@ -12,6 +12,7 @@ const {
   createNewCohort,
   addTagsToStudent,
   getAllTagsFromStudent,
+  removeTagFromStudent,
   removeAllTagsFromStudent,
 } = require('.');
 
@@ -239,7 +240,6 @@ describe('getAllTagsFromStudent', () => {
     const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
     await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
     const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
-    console.log(tags);
     expect(tags.length).toEqual(2);
   });
 
@@ -250,7 +250,37 @@ describe('getAllTagsFromStudent', () => {
 
   test('Should expect an error if student is not found in cohort', async () => {
     const status = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, 0);
-    console.log(status);
+    expect(status).toBe('The requested resource could not be found');
+  });
+});
+
+describe('removeTagFromStudent', () => {
+  test('Should expect a 200 status if tag successfully removed.', async () => {
+    const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    const status = await removeTagFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, tags[0].id);
+    expect(status).toBe(200);
+  });
+
+  test('Should expect tag to be removed from student.', async () => {
+    await addStudent();
+    await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
+    await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
+    const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    const firstTag = tags[0];
+    await removeTagFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, firstTag.id);
+    const tagsAgain = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    const newFirstTag = tagsAgain[0];
+    expect(firstTag).not.toMatchObject(newFirstTag);
+  });
+
+  test('Should expect an error if the cohortId provided is invalid', async () => {
+    const status = await removeTagFromStudent(0, TEST_STUDENT.id);
+    expect(status).toBe('The requested resource could not be found');
+  });
+
+  test('Should expect an error if student is not found in cohort', async () => {
+    const status = await removeTagFromStudent(TEST_LEARN_COHORT_ID, 0);
     expect(status).toBe('The requested resource could not be found');
   });
 });
