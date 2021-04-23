@@ -118,6 +118,7 @@ exports.createNewCohort = async (options) => {
   }
 };
 
+// Tag management
 exports.addTagsToStudent = async (cohortId, id, ...tags) => {
   const body = { tags };
   try {
@@ -125,10 +126,23 @@ exports.addTagsToStudent = async (cohortId, id, ...tags) => {
       `${LEARN_API_COHORTS}/${cohortId}/users/${id}/tags`,
       { method: 'POST', body: JSON.stringify(body), headers },
     );
-
     const json = await response.json();
     if (json.error || json.message) throw new Error(json.error || json.message);
     return response.status;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+exports.getAllTagsFromStudent = async (cohortId, id) => {
+  try {
+    const response = await fetch(
+      `${LEARN_API_COHORTS}/${cohortId}/users/${id}/tags`,
+      { method: 'GET', headers },
+    );
+    const json = await response.json();
+    if (json.error || json.message) throw new Error(json.error || json.message);
+    return json;
   } catch (error) {
     return error.message;
   }
