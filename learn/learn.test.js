@@ -14,6 +14,7 @@ const {
   getAllTagsFromStudent,
   removeTagFromStudent,
   removeAllTagsFromStudent,
+  getAllTagsFromCohort,
 } = require('.');
 
 const TEST_LEARN_COHORT_ID = 2024;
@@ -310,6 +311,17 @@ describe('removeAllTagsFromStudent', () => {
   test('Should expect an error if student is not found in cohort', async () => {
     const status = await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, 0);
     expect(status).toBe('The requested resource could not be found');
+  });
+});
+
+describe('getAllTagsFromCohort', () => {
+  test('Should expect all of a cohort\'s tags.', async () => {
+    const tags = await getAllTagsFromCohort(TEST_LEARN_COHORT_ID);
+    expect(Array.isArray(tags)).toBe(true);
+  });
+  test('Should expect an error if the cohortId provided is invalid', async () => {
+    const tags = await getAllTagsFromCohort(0);
+    expect(tags).toBe('The requested resource could not be found');
   });
 });
 
