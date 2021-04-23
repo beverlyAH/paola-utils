@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fetch = require('node-fetch');
 const { LEARN_API_COHORTS } = require('../constants');
 
@@ -165,7 +166,10 @@ exports.removeTagFromStudent = async (cohortId, id, tagId) => {
 exports.removeAllTagsFromStudent = async (cohortId, id) => {
   try {
     const tags = await this.getAllTagsFromStudent(cohortId, id);
-    await Promise.all(tags.map(
+    if (!Array.isArray(tags)) {
+      return tags;
+    }
+    return await Promise.all(tags.map(
       (tag) => this.removeTagFromStudent(cohortId, id, tag.id),
     ))
       .then(
