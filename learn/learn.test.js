@@ -107,7 +107,7 @@ describe('validateStudentEnrollment', () => {
     ];
     const student = await validateStudentEnrollment(TEST_LEARN_COHORT_ID, TEST_STUDENT.email);
     const actualProps = Object.keys(student);
-    expect(expectedProps).toEqual(actualProps);
+    expect(actualProps).toEqual(expectedProps);
   });
 
   test('Should expect an error if student is not found in cohort', async () => {
@@ -134,7 +134,7 @@ describe('validateStudentEnrollmentByID', () => {
     ];
     const student = await validateStudentEnrollmentByID(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
     const actualProps = Object.keys(student);
-    expect(expectedProps).toEqual(actualProps);
+    expect(actualProps).toEqual(expectedProps);
   });
 
   test('Should expect an error if student is not found in cohort', async () => {
@@ -267,10 +267,10 @@ describe('removeTagFromStudent', () => {
     const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
     await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
     const tags = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
-    const firstTag = tags[0];
+    const firstTag = await tags[0];
     await removeTagFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, firstTag.id);
     const tagsAgain = await getAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
-    const newFirstTag = tagsAgain[0];
+    const newFirstTag = await tagsAgain[0];
     expect(firstTag).not.toMatchObject(newFirstTag);
   });
 
@@ -290,8 +290,8 @@ describe('removeAllTagsFromStudent', () => {
     await addStudent();
     const testTags = [makeTag('Pretty Cool', 'gray'), makeTag('Paola', 'red')];
     await addTagsToStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id, ...testTags);
-    const message = await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
-    expect(message).toBe('All tags removed.');
+    const response = await removeAllTagsFromStudent(TEST_LEARN_COHORT_ID, TEST_STUDENT.id);
+    expect(response).toBe('All tags removed.');
   });
 
   test('Should expect all tags to be removed.', async () => {
@@ -339,7 +339,7 @@ describe('getAllTagsFromCohort', () => {
 //     const status = await createNewCohort(body);
 //     expect(status).toBe(200);
 //   });
-//
+
 //   test('Should return an error if the cohortId provided is invalid', async () => {
 //     const students = await createNewCohort(0);
 //     expect(students).toContain('Validation Error');

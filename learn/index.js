@@ -120,6 +120,20 @@ exports.createNewCohort = async (options) => {
 };
 
 // Tag management
+exports.getAllTagsFromStudent = async (cohortId, id) => {
+  try {
+    const response = await fetch(
+      `${LEARN_API_COHORTS}/${cohortId}/users/${id}/tags`,
+      { method: 'GET', headers },
+    );
+    const json = await response.json();
+    if (json.error || json.message) throw new Error(json.error || json.message);
+    return json;
+  } catch (error) {
+    return error.message;
+  }
+};
+
 exports.addTagsToStudent = async (cohortId, id, ...tags) => {
   const body = { tags };
   try {
@@ -130,20 +144,6 @@ exports.addTagsToStudent = async (cohortId, id, ...tags) => {
     const json = await response.json();
     if (json.error || json.message) throw new Error(json.error || json.message);
     return response.status;
-  } catch (error) {
-    return error.message;
-  }
-};
-
-exports.getAllTagsFromStudent = async (cohortId, id) => {
-  try {
-    const response = await fetch(
-      `${LEARN_API_COHORTS}/${cohortId}/users/${id}/tags`,
-      { method: 'GET', headers },
-    );
-    const json = await response.json();
-    if (json.error || json.message) throw new Error(json.error || json.message);
-    return json;
   } catch (error) {
     return error.message;
   }
@@ -165,19 +165,23 @@ exports.removeTagFromStudent = async (cohortId, id, tagId) => {
 
 exports.removeAllTagsFromStudent = async (cohortId, id) => {
   try {
-    const tags = await this.getAllTagsFromStudent(cohortId, id);
-    if (!Array.isArray(tags)) {
-      return tags;
+    const response = await exports.getAllTagsFromStudent(cohortId, id);
+
+    if (!Array.isArray(response)) {
+      return response;
     }
-    return await Promise.all(tags.map(
-      (tag) => this.removeTagFromStudent(cohortId, id, tag.id),
-    ))
-      .then(
-        (data) => 'All tags removed.',
-      )
-      .catch(
-        (error) => error,
-      );
+
+    const tags = response.map(
+      (tag) => exports.removeTagFromStudent(cohortId, id, tag.id),
+    );
+
+    const result = await Promise.all(tags);
+
+    const tagsRemoved = result.every((status) => status === 200)
+      ? 'All tags removed.'
+      : new Error('Tag removal failed.');
+
+    return tagsRemoved;
   } catch (error) {
     return error;
   }
